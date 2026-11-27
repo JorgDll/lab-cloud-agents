@@ -1,11 +1,16 @@
 from tasks import agregar_tarea, completar_tarea, pendientes
 
 tareas = []
-agregar_tarea(tareas, "Estudiar agentes cloud", "Estudio")
-agregar_tarea(tareas, "Preparar laboratorio", "Trabajo")
-agregar_tarea(tareas, "Revisar issue", "Trabajo")
-agregar_tarea(tareas, "Leer documentación", "Estudio")
+agregar_tarea(tareas, "estudiar agentes cloud", "ESTUDIO")
+agregar_tarea(tareas, "  Preparar   LABORATORIO ", "trabajo")
+agregar_tarea(tareas, "revisar issue", "TrAbAjO")
+agregar_tarea(tareas, "leer documentación", "estudio")
 completar_tarea(tareas, 1)
+
+try:
+    agregar_tarea(tareas, "Tarea inválida", "TrBbaj0")
+except ValueError as error:
+    print(f"Error: {error}\n")
 
 print("Pendientes:")
 for tarea in pendientes(tareas):

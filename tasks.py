@@ -1,14 +1,28 @@
+def _limpiar(texto, campo):
+    """Valida que el texto sea un str no vacío y colapsa los espacios."""
+    if not isinstance(texto, str):
+        raise TypeError(f"El campo {campo} debe ser texto")
+    texto = " ".join(texto.split())
+    if not texto:
+        raise ValueError(f"El campo {campo} es obligatorio")
+    return texto
+
+
+def _formatear(texto):
+    """Deja solo la primera letra en mayúscula."""
+    return texto.capitalize()
+
+
 def _normalizar(texto):
-    return texto.strip().casefold()
+    return " ".join(texto.split()).casefold()
 
 
 def agregar_tarea(tareas, titulo, categoria):
-    titulo = titulo.strip()
-    if not titulo:
-        raise ValueError("El título es obligatorio")
-    categoria = categoria.strip()
-    if not categoria:
-        raise ValueError("La categoría es obligatoria")
+    titulo = _formatear(_limpiar(titulo, "título"))
+    categoria = _limpiar(categoria, "categoría")
+    if any(c.isdigit() for c in categoria):
+        raise ValueError("La categoría no puede contener números")
+    categoria = _formatear(categoria)
     tarea = {
         "id": len(tareas) + 1,
         "titulo": titulo,

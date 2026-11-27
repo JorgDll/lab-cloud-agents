@@ -70,6 +70,54 @@ class TestTasks(unittest.TestCase):
         agregar_tarea(tareas, "B", "Estudio")
         self.assertEqual(len(pendientes(tareas)), 2)
 
+    def test_categoria_con_numeros(self):
+        tareas = []
+        for categoria in ("TrBbaj0", "Trabajo2", "123"):
+            with self.subTest(categoria=categoria):
+                with self.assertRaises(ValueError):
+                    agregar_tarea(tareas, "Tarea", categoria)
+        self.assertEqual(tareas, [])
+
+    def test_titulo_vacio(self):
+        for titulo in ("", "   "):
+            with self.subTest(titulo=repr(titulo)):
+                with self.assertRaises(ValueError):
+                    agregar_tarea([], titulo, "Trabajo")
+
+    def test_textos_no_str(self):
+        with self.assertRaises(TypeError):
+            agregar_tarea([], None, "Trabajo")
+        with self.assertRaises(TypeError):
+            agregar_tarea([], "Tarea", 123)
+
+    def test_formato_primera_letra_mayuscula(self):
+        tareas = []
+        casos = [
+            ("trabajo", "Trabajo"),
+            ("TRABAJO", "Trabajo"),
+            ("tRaBaJo", "Trabajo"),
+            ("vida PERSONAL", "Vida personal"),
+        ]
+        for entrada, esperado in casos:
+            with self.subTest(entrada=entrada):
+                tarea = agregar_tarea(tareas, "Tarea", entrada)
+                self.assertEqual(tarea["categoria"], esperado)
+
+    def test_formato_titulo(self):
+        tarea = agregar_tarea([], "  PREPARAR   el INFORME  ", "Trabajo")
+        self.assertEqual(tarea["titulo"], "Preparar el informe")
+
+    def test_limpieza_espacios_internos(self):
+        tarea = agregar_tarea([], "Tarea", "  vida    personal ")
+        self.assertEqual(tarea["categoria"], "Vida personal")
+
+    def test_filtrado_tras_formateo(self):
+        tareas = []
+        agregar_tarea(tareas, "A", "TRABAJO")
+        agregar_tarea(tareas, "B", "vida   personal")
+        self.assertEqual([t["titulo"] for t in pendientes(tareas, "trabajo")], ["A"])
+        self.assertEqual([t["titulo"] for t in pendientes(tareas, "VIDA PERSONAL")], ["B"])
+
 
 if __name__ == "__main__":
     unittest.main()
