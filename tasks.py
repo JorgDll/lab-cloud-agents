@@ -1,8 +1,20 @@
-def agregar_tarea(tareas, titulo):
+def _normalizar(texto):
+    return texto.strip().casefold()
+
+
+def agregar_tarea(tareas, titulo, categoria):
     titulo = titulo.strip()
     if not titulo:
         raise ValueError("El título es obligatorio")
-    tarea = {"id": len(tareas) + 1, "titulo": titulo, "completada": False}
+    categoria = categoria.strip()
+    if not categoria:
+        raise ValueError("La categoría es obligatoria")
+    tarea = {
+        "id": len(tareas) + 1,
+        "titulo": titulo,
+        "categoria": categoria,
+        "completada": False,
+    }
     tareas.append(tarea)
     return tarea
 
@@ -15,5 +27,9 @@ def completar_tarea(tareas, tarea_id):
     raise ValueError("Tarea no encontrada")
 
 
-def pendientes(tareas):
-    return [t for t in tareas if not t["completada"]]
+def pendientes(tareas, categoria=None):
+    resultado = [t for t in tareas if not t["completada"]]
+    if categoria is None:
+        return resultado
+    buscada = _normalizar(categoria)
+    return [t for t in resultado if _normalizar(t.get("categoria", "")) == buscada]
